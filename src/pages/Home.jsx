@@ -3,9 +3,11 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 // ✅ Fetch products from API
 const fetchProducts = async () => {
-  const { data } = await axios.get("http://127.0.0.1:8000/products/");
+  const { data } = await axios.get(`${API_BASE_URL}/products/`);
   return data;
 };
 
@@ -21,8 +23,8 @@ export default function Home() {
   const handleSearch = async () => {
     if (!searchTerm) return;
     try {
-      const { data } = await axios.get(`http://127.0.0.1:8000/products/?query=${searchTerm}`);
-      setProducts(data);
+      const { data } = await axios.get(`${API_BASE_URL}/products/?query=${searchTerm}`);
+      console.log("Search Results:", data);
     } catch (error) {
       console.error("Error searching products:", error);
     }
@@ -37,7 +39,7 @@ export default function Home() {
     }
 
     try {
-      await axios.post(`http://127.0.0.1:8000/cart/${productId}`, {}, {
+      await axios.post(`${API_BASE_URL}/cart/${productId}`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert("Added to cart!");
@@ -55,7 +57,7 @@ export default function Home() {
     }
 
     try {
-      await axios.post(`http://127.0.0.1:8000/wishlist/${productId}`, {}, {
+      await axios.post(`${API_BASE_URL}/wishlist/${productId}`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert("Added to wishlist!");
