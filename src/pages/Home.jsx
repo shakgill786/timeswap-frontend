@@ -5,10 +5,16 @@ import { useState } from "react";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-// ✅ Fetch products from API
 const fetchProducts = async () => {
-  const { data } = await axios.get(`${API_BASE_URL}/products/`);
-  return data;
+  try {
+    const response = await axios.get(`${API_BASE_URL}/products/`);
+    const filteredProducts = response.data.filter(product => product.title !== "string");
+    console.log("Filtered Products:", filteredProducts);
+    return filteredProducts;
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    throw error;
+  }
 };
 
 export default function Home() {
@@ -101,7 +107,11 @@ export default function Home() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {products.map((product) => (
           <div key={product.id} className="border p-4 rounded-lg shadow-md">
-            <img src={product.image || "https://via.placeholder.com/150"} alt={product.title} className="w-full h-40 object-cover rounded-md mb-4" />
+            <img 
+              src={product.image !== "string" ? product.image : "https://via.placeholder.com/150"} 
+              alt={product.title} 
+              className="w-full h-40 object-cover rounded-md mb-4" 
+            />
             <h2 className="text-xl font-semibold">{product.title}</h2>
             <p className="text-gray-600">{product.description}</p>
             <div className="mt-4 flex gap-2">
