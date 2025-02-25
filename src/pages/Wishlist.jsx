@@ -14,7 +14,6 @@ const fetchWishlist = async () => {
 
 export default function Wishlist() {
   const queryClient = useQueryClient();
-
   const { data: wishlist, isLoading, error } = useQuery(["wishlist"], fetchWishlist);
 
   const removeFromWishlist = useMutation(

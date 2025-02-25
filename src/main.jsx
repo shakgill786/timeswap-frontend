@@ -15,7 +15,6 @@ import CreateProduct from "./pages/CreateProduct";
 
 import "./index.css";
 
-// ✅ Ensure React Query is set up properly
 const queryClient = new QueryClient();
 
 function App() {
@@ -38,5 +37,4 @@ function App() {
   );
 }
 
-// ✅ Ensure React renders properly
 ReactDOM.createRoot(document.getElementById("root")).render(<App />);
