@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
 export default function Dashboard() {
@@ -12,7 +12,6 @@ export default function Dashboard() {
   const [wishlist, setWishlist] = useState([]);
   const [cart, setCart] = useState([]);
 
-  // ✅ Redirect to login if no token
   useEffect(() => {
     if (!token) {
       navigate("/auth");
@@ -21,7 +20,6 @@ export default function Dashboard() {
 
     const fetchUserData = async () => {
       try {
-        // ✅ Fetch User Details
         const userResponse = await axios.get(`${API_BASE_URL}/auth/me/`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -29,7 +27,6 @@ export default function Dashboard() {
         setUser(userResponse.data);
         const userId = userResponse.data.id;
 
-        // ✅ Fetch User's Products, Wishlist, and Cart
         const [productsResponse, wishlistResponse, cartResponse] = await Promise.all([
           axios.get(`${API_BASE_URL}/products/`),
           axios.get(`${API_BASE_URL}/wishlist/`, { headers: { Authorization: `Bearer ${token}` } }),
@@ -53,14 +50,22 @@ export default function Dashboard() {
     <div className="p-8 max-w-2xl mx-auto">
       <h1 className="text-3xl font-bold text-center mb-6">Dashboard</h1>
 
-      {/* My Products */}
+      <div className="flex justify-center mb-6">
+        <Link to="/create-product" className="bg-green-500 text-white px-4 py-2 rounded-md">
+          + Add Product
+        </Link>
+      </div>
+
       <section className="mb-6">
         <h2 className="text-2xl font-semibold">My Products</h2>
         <ul className="space-y-2">
           {products.length > 0 ? (
             products.map((product) => (
-              <li key={product.id} className="border p-3 rounded-md bg-gray-100">
+              <li key={product.id} className="border p-3 rounded-md bg-gray-100 flex justify-between">
                 {product.title}
+                <Link to={`/product/${product.id}`} className="text-blue-500 hover:underline">
+                  Manage
+                </Link>
               </li>
             ))
           ) : (
@@ -69,36 +74,14 @@ export default function Dashboard() {
         </ul>
       </section>
 
-      {/* Wishlist */}
       <section className="mb-6">
         <h2 className="text-2xl font-semibold">Wishlist</h2>
-        <ul className="space-y-2">
-          {wishlist.length > 0 ? (
-            wishlist.map((item) => (
-              <li key={item.id} className="border p-3 rounded-md bg-gray-100">
-                Product ID: {item.product_id}
-              </li>
-            ))
-          ) : (
-            <p className="text-gray-500">Your wishlist is empty.</p>
-          )}
-        </ul>
+        <p className="text-gray-500">{wishlist.length === 0 ? "Your wishlist is empty." : `${wishlist.length} items saved.`}</p>
       </section>
 
-      {/* Shopping Cart */}
       <section>
         <h2 className="text-2xl font-semibold">Shopping Cart</h2>
-        <ul className="space-y-2">
-          {cart.length > 0 ? (
-            cart.map((item) => (
-              <li key={item.id} className="border p-3 rounded-md bg-gray-100">
-                Product ID: {item.product_id}
-              </li>
-            ))
-          ) : (
-            <p className="text-gray-500">Your cart is empty.</p>
-          )}
-        </ul>
+        <p className="text-gray-500">{cart.length === 0 ? "Your cart is empty." : `${cart.length} items in cart.`}</p>
       </section>
     </div>
   );
