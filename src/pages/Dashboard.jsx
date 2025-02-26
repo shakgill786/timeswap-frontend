@@ -11,6 +11,7 @@ export default function Dashboard() {
   const [products, setProducts] = useState([]);
   const [wishlist, setWishlist] = useState([]);
   const [cart, setCart] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!token) {
@@ -38,24 +39,29 @@ export default function Dashboard() {
         setCart(cartResponse.data);
       } catch (error) {
         console.error("Error fetching user data:", error);
+        navigate("/auth");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchUserData();
   }, [token, navigate]);
 
-  if (!user) return <p className="text-center text-gray-500">Loading...</p>;
+  if (loading) return <p className="text-center text-gray-500">Loading...</p>;
 
   return (
-    <div className="p-8 max-w-2xl mx-auto">
+    <div className="p-8 max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold text-center mb-6">Dashboard</h1>
 
+      {/* Add Product Button */}
       <div className="flex justify-center mb-6">
         <Link to="/create-product" className="bg-green-500 text-white px-4 py-2 rounded-md">
           + Add Product
         </Link>
       </div>
 
+      {/* My Products */}
       <section className="mb-6">
         <h2 className="text-2xl font-semibold">My Products</h2>
         <ul className="space-y-2">
@@ -74,11 +80,13 @@ export default function Dashboard() {
         </ul>
       </section>
 
+      {/* Wishlist */}
       <section className="mb-6">
         <h2 className="text-2xl font-semibold">Wishlist</h2>
         <p className="text-gray-500">{wishlist.length === 0 ? "Your wishlist is empty." : `${wishlist.length} items saved.`}</p>
       </section>
 
+      {/* Shopping Cart */}
       <section>
         <h2 className="text-2xl font-semibold">Shopping Cart</h2>
         <p className="text-gray-500">{cart.length === 0 ? "Your cart is empty." : `${cart.length} items in cart.`}</p>

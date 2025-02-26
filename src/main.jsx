@@ -15,26 +15,42 @@ import CreateProduct from "./pages/CreateProduct";
 
 import "./index.css";
 
-const queryClient = new QueryClient();
+// ✅ Improved QueryClient Configuration
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      refetchOnWindowFocus: false,
+      staleTime: 1000 * 60 * 5, // Cache data for 5 minutes
+    },
+  },
+});
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Router>
-        <ToastConfig />
         <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/product/:id" element={<ProductDetail />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/wishlist" element={<Wishlist />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/create-product" element={<CreateProduct />} />
-        </Routes>
+        <ToastConfig />
+        <div className="max-w-6xl mx-auto px-4 md:px-6 py-6">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/wishlist" element={<Wishlist />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/create-product" element={<CreateProduct />} />
+            <Route path="*" element={<h1 className="text-center text-3xl mt-10">Page Not Found</h1>} />
+          </Routes>
+        </div>
       </Router>
     </QueryClientProvider>
   );
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
