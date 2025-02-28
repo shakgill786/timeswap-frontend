@@ -11,10 +11,14 @@ const fetchWishlist = async () => {
   if (!token) throw new Error("User not authenticated");
 
   const { data } = await axios.get(`${API_BASE_URL}/wishlist/`, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
   });
 
-  return Array.isArray(data) ? data : []; // Ensure data is an array
+  console.log("WISHLIST DATA:", data);
+  return Array.isArray(data) ? data : [];
 };
 
 export default function Wishlist() {

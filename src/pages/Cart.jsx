@@ -11,10 +11,14 @@ const fetchCart = async () => {
   if (!token) throw new Error("User not authenticated");
 
   const { data } = await axios.get(`${API_BASE_URL}/cart/`, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
   });
 
-  return Array.isArray(data) ? data : []; // Ensure data is an array
+  console.log("CART DATA:", data);
+  return Array.isArray(data) ? data : [];
 };
 
 export default function Cart() {
