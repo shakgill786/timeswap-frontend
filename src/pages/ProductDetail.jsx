@@ -12,52 +12,68 @@ const fetchProduct = async (id) => {
     const { data } = await axios.get(`${API_BASE_URL}/products/${id}`);
     return data;
   } catch (error) {
-    console.error("Error fetching product:", error);
+    console.error("Error fetching product:", error.response?.data || error);
     throw error;
   }
 };
 
 export default function ProductDetail() {
   const { id } = useParams();
+  const token = localStorage.getItem("token");
 
-  // ✅ UseQuery for fetching product details
+  // ✅ Fetch Product
   const { data: product, isLoading, error } = useQuery({
     queryKey: ["product", id],
     queryFn: () => fetchProduct(id),
   });
 
-  // ✅ Add to Cart Mutation
-  const addToCart = useMutation(async () => {
-    const token = localStorage.getItem("token");
-    await axios.post(`${API_BASE_URL}/cart/${id}`, {}, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    toast.success("Added to cart!");
+  // ✅ Add to Cart Mutation with Error Handling
+  const addToCart = useMutation({
+    mutationFn: async () => {
+      if (!token) {
+        toast.error("Please log in to add items to the cart.");
+        return;
+      }
+      try {
+        const response = await axios.post(
+          `${API_BASE_URL}/cart/${id}`, // ✅ Corrected API endpoint format
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        console.log("Cart Response:", response.data);
+        toast.success("Added to cart!");
+      } catch (error) {
+        console.error("Error adding to cart:", error.response?.data || error);
+        toast.error(error.response?.data?.detail || "Failed to add to cart.");
+      }
+    },
   });
 
-  // ✅ Add to Wishlist Mutation
-  const addToWishlist = useMutation(async () => {
-    const token = localStorage.getItem("token");
-    await axios.post(`${API_BASE_URL}/wishlist/${id}`, {}, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    toast.success("Added to wishlist!");
+  // ✅ Add to Wishlist Mutation with Error Handling
+  const addToWishlist = useMutation({
+    mutationFn: async () => {
+      if (!token) {
+        toast.error("Please log in to add items to the wishlist.");
+        return;
+      }
+      try {
+        const response = await axios.post(
+          `${API_BASE_URL}/wishlist/${id}`, // ✅ Corrected API endpoint format
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        console.log("Wishlist Response:", response.data);
+        toast.success("Added to wishlist!");
+      } catch (error) {
+        console.error("Error adding to wishlist:", error.response?.data || error);
+        toast.error(error.response?.data?.detail || "Failed to add to wishlist.");
+      }
+    },
   });
 
-  // ✅ Loading State with a Spinner
-  if (isLoading) return (
-    <div className="text-center py-6">
-      <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 mx-auto"></div>
-      <p className="text-gray-500 mt-3">Loading product details...</p>
-    </div>
-  );
-
-  // ✅ Error Handling
-  if (error || !product) return (
-    <div className="text-center py-6">
-      <p className="text-red-500 font-semibold text-lg">Product not found.</p>
-    </div>
-  );
+  // ✅ Loading State
+  if (isLoading) return <p className="text-center text-gray-500">Loading product details...</p>;
+  if (error || !product) return <p className="text-center text-red-500">Product not found.</p>;
 
   return (
     <div className="product-detail-container">
@@ -65,8 +81,8 @@ export default function ProductDetail() {
         {/* 🖼️ Product Image */}
         <div>
           <img
-            src={product.image !== "string" ? product.image : "https://via.placeholder.com/500"}
-            alt={product.title}
+            src={product.image && product.image !== "string" ? product.image : "https://via.placeholder.com/500"}
+            alt={product.title || "Product"}
             className="product-image"
           />
         </div>

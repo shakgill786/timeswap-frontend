@@ -11,14 +11,10 @@ const fetchWishlist = async () => {
   if (!token) throw new Error("User not authenticated");
 
   const { data } = await axios.get(`${API_BASE_URL}/wishlist/`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
+    headers: { Authorization: `Bearer ${token}` },
   });
 
-  console.log("WISHLIST DATA:", data);
-  return Array.isArray(data) ? data : [];
+  return data;
 };
 
 export default function Wishlist() {
@@ -30,9 +26,9 @@ export default function Wishlist() {
 
   // ✅ Remove from wishlist mutation
   const removeFromWishlist = useMutation({
-    mutationFn: async (productId) => {
+    mutationFn: async (wishlistId) => {
       const token = localStorage.getItem("token");
-      await axios.delete(`${API_BASE_URL}/wishlist/${productId}`, {
+      await axios.delete(`${API_BASE_URL}/wishlist/${wishlistId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
     },
@@ -74,24 +70,26 @@ export default function Wishlist() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {wishlist.map((product) => (
-            <div key={product.id} className="border p-4 rounded-lg shadow-md bg-white flex flex-col justify-between">
+          {wishlist.map((item) => (
+            <div key={item.wishlist_id} className="border p-4 rounded-lg shadow-md bg-white flex flex-col justify-between">
               <img
-                src={product.image !== "string" ? product.image : "https://via.placeholder.com/150"}
-                alt={product.title}
+                src={item.product?.image || "https://via.placeholder.com/150"}
+                alt={item.product?.title || "Product Image"}
                 className="w-full h-40 object-cover rounded-md mb-4"
               />
-              <h2 className="text-xl font-semibold text-gray-800">{product.title}</h2>
+              <h2 className="text-xl font-semibold text-gray-800">{item.product?.title || "No title available"}</h2>
+              <p className="text-gray-600 text-sm my-2">{item.product?.description || "No description available"}</p>
+              <p className="text-gray-700 font-semibold">${item.product?.price || "N/A"}</p>
               <div className="mt-4 flex flex-col gap-2">
                 <button
                   className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
-                  onClick={() => addToCart.mutate(product.id)}
+                  onClick={() => addToCart.mutate(item.product.id)}
                 >
                   Add to Cart 🛒
                 </button>
                 <button
                   className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-700 transition"
-                  onClick={() => removeFromWishlist.mutate(product.id)}
+                  onClick={() => removeFromWishlist.mutate(item.wishlist_id)}
                 >
                   Remove ❌
                 </button>
