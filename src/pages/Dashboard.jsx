@@ -54,11 +54,12 @@ export default function Dashboard() {
     <div className="p-8 max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold text-center mb-6">Dashboard</h1>
 
-      {/* Add Product Button */}
-      <div className="flex justify-center mb-6">
-        <Link to="/create-product" className="bg-green-500 text-white px-4 py-2 rounded-md">
-          + Add Product
-        </Link>
+      {/* Navigation Links */}
+      <div className="flex justify-between mb-6">
+        <Link to="/create-product" className="bg-green-500 text-white px-4 py-2 rounded-md">+ Add Product</Link>
+        <Link to="/orders" className="bg-blue-500 text-white px-4 py-2 rounded-md">View Orders</Link>
+        <Link to="/wishlist" className="bg-pink-500 text-white px-4 py-2 rounded-md">Wishlist</Link>
+        <Link to="/cart" className="bg-yellow-500 text-white px-4 py-2 rounded-md">Shopping Cart</Link>
       </div>
 
       {/* My Products */}
@@ -69,27 +70,13 @@ export default function Dashboard() {
             products.map((product) => (
               <li key={product.id} className="border p-3 rounded-md bg-gray-100 flex justify-between">
                 {product.title}
-                <Link to={`/product/${product.id}`} className="text-blue-500 hover:underline">
-                  Manage
-                </Link>
+                <Link to={`/product/${product.id}`} className="text-blue-500 hover:underline">Manage</Link>
               </li>
             ))
           ) : (
             <p className="text-gray-500">No products yet.</p>
           )}
         </ul>
-      </section>
-
-      {/* Wishlist */}
-      <section className="mb-6">
-        <h2 className="text-2xl font-semibold">Wishlist</h2>
-        <p className="text-gray-500">{wishlist.length === 0 ? "Your wishlist is empty." : `${wishlist.length} items saved.`}</p>
-      </section>
-
-      {/* Shopping Cart */}
-      <section>
-        <h2 className="text-2xl font-semibold">Shopping Cart</h2>
-        <p className="text-gray-500">{cart.length === 0 ? "Your cart is empty." : `${cart.length} items in cart.`}</p>
       </section>
     </div>
   );

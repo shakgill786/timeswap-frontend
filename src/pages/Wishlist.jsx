@@ -38,17 +38,25 @@ export default function Wishlist() {
     },
   });
 
-  // ✅ Add to Cart mutation
+  // ✅ Add to Cart mutation (Fixed: Correct product ID now sent)
   const addToCart = useMutation({
     mutationFn: async (productId) => {
       const token = localStorage.getItem("token");
-      await axios.post(`${API_BASE_URL}/cart/${productId}`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-    },
-    onSuccess: () => {
-      toast.success("Added to cart!");
-      queryClient.invalidateQueries(["wishlist"]);
+      if (!token) {
+        toast.error("You must be logged in to add items to the cart.");
+        return;
+      }
+
+      try {
+        await axios.post(`${API_BASE_URL}/cart/${productId}`, {}, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        toast.success("Added to cart!");
+        queryClient.invalidateQueries(["wishlist"]);
+      } catch (error) {
+        console.error("Error adding to cart:", error.response?.data || error);
+        toast.error(error.response?.data?.detail || "Failed to add to cart.");
+      }
     },
   });
 

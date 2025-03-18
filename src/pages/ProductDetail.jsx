@@ -36,7 +36,7 @@ export default function ProductDetail() {
       }
       try {
         const response = await axios.post(
-          `${API_BASE_URL}/cart/${id}`, // ✅ Corrected API endpoint format
+          `${API_BASE_URL}/cart/${id}`,
           {},
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -58,7 +58,7 @@ export default function ProductDetail() {
       }
       try {
         const response = await axios.post(
-          `${API_BASE_URL}/wishlist/${id}`, // ✅ Corrected API endpoint format
+          `${API_BASE_URL}/wishlist/${id}`,
           {},
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -93,6 +93,16 @@ export default function ProductDetail() {
             <h1 className="product-title">{product.title}</h1>
             <p className="product-description">{product.description}</p>
             <span className="product-category">{product.category}</span>
+          </div>
+
+          {/* ✅ Additional Information */}
+          <div className="mt-4">
+            <p className="text-gray-700">
+              <strong>Barter Options:</strong> {product.barter_options || "Not available"}
+            </p>
+            <p className="text-gray-700">
+              <strong>Owner:</strong> {product.owner_id || "Unknown"}
+            </p>
           </div>
 
           {/* 🛒 Buttons */}
