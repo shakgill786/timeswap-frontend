@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const token = localStorage.getItem("token");
 
   const [user, setUser] = useState(null);
   const [products, setProducts] = useState([]);
-  const [wishlist, setWishlist] = useState([]);
-  const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -28,15 +29,8 @@ export default function Dashboard() {
         setUser(userResponse.data);
         const userId = userResponse.data.id;
 
-        const [productsResponse, wishlistResponse, cartResponse] = await Promise.all([
-          axios.get(`${API_BASE_URL}/products/`),
-          axios.get(`${API_BASE_URL}/wishlist/`, { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get(`${API_BASE_URL}/cart/`, { headers: { Authorization: `Bearer ${token}` } }),
-        ]);
-
+        const productsResponse = await axios.get(`${API_BASE_URL}/products/`);
         setProducts(productsResponse.data.filter((p) => p.owner_id === userId));
-        setWishlist(wishlistResponse.data);
-        setCart(cartResponse.data);
       } catch (error) {
         console.error("Error fetching user data:", error);
         navigate("/auth");
@@ -47,6 +41,42 @@ export default function Dashboard() {
 
     fetchUserData();
   }, [token, navigate]);
+
+  // ✅ Add to Cart Mutation with Error Handling
+  const addToCart = useMutation({
+    mutationFn: async (productId) => {
+      try {
+        const response = await axios.post(`${API_BASE_URL}/cart/${productId}`, {}, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        toast.success("Added to cart!");
+        queryClient.invalidateQueries(["cart"]); // ✅ Instantly updates cart UI
+      } catch (error) {
+        console.error("Error adding to cart:", error);
+        if (error.response?.status === 400) {
+          toast.error("Item is already in the cart.");
+        } else {
+          toast.error(error.response?.data?.detail || "Failed to add to cart.");
+        }
+      }
+    },
+  });
+
+  // ✅ Add to Wishlist Mutation
+  const addToWishlist = useMutation({
+    mutationFn: async (productId) => {
+      try {
+        await axios.post(`${API_BASE_URL}/wishlist/${productId}`, {}, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        toast.success("Added to wishlist!");
+        queryClient.invalidateQueries(["wishlist"]); // ✅ Instantly updates wishlist UI
+      } catch (error) {
+        console.error("Error adding to wishlist:", error);
+        toast.error(error.response?.data?.detail || "Failed to add to wishlist.");
+      }
+    },
+  });
 
   if (loading) return <p className="text-center text-gray-500">Loading...</p>;
 
@@ -68,9 +98,27 @@ export default function Dashboard() {
         <ul className="space-y-2">
           {products.length > 0 ? (
             products.map((product) => (
-              <li key={product.id} className="border p-3 rounded-md bg-gray-100 flex justify-between">
-                {product.title}
-                <Link to={`/product/${product.id}`} className="text-blue-500 hover:underline">Manage</Link>
+              <li key={product.id} className="border p-3 rounded-md bg-gray-100 flex justify-between items-center">
+                <div>
+                  <p className="font-semibold">{product.title}</p>
+                </div>
+                <div className="flex gap-2">
+                  <Link to={`/product/${product.id}`} className="text-blue-500 hover:underline">
+                    Manage
+                  </Link>
+                  <button 
+                    onClick={() => addToCart.mutate(product.id)}
+                    className="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-700 transition"
+                  >
+                    Add to Cart 🛒
+                  </button>
+                  <button 
+                    onClick={() => addToWishlist.mutate(product.id)}
+                    className="bg-pink-500 text-white px-4 py-2 rounded-md hover:bg-pink-700 transition"
+                  >
+                    Add to Wishlist ❤️
+                  </button>
+                </div>
               </li>
             ))
           ) : (

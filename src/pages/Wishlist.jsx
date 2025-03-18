@@ -24,6 +24,20 @@ export default function Wishlist() {
     queryFn: fetchWishlist,
   });
 
+  // ✅ Add to Wishlist mutation (For future use)
+  const addToWishlist = useMutation({
+    mutationFn: async (productId) => {
+      const token = localStorage.getItem("token");
+      await axios.post(`${API_BASE_URL}/wishlist/${productId}`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    },
+    onSuccess: () => {
+      toast.success("Added to wishlist!");
+      queryClient.invalidateQueries(["wishlist"]);
+    },
+  });
+
   // ✅ Remove from wishlist mutation
   const removeFromWishlist = useMutation({
     mutationFn: async (wishlistId) => {
@@ -34,11 +48,11 @@ export default function Wishlist() {
     },
     onSuccess: () => {
       toast.success("Removed from wishlist!");
-      queryClient.invalidateQueries(["wishlist"]);
+      queryClient.invalidateQueries(["wishlist"]); // ✅ Refresh wishlist
     },
   });
 
-  // ✅ Add to Cart mutation (Fixed: Correct product ID now sent)
+  // ✅ Add to Cart mutation (Now refreshes both wishlist & cart!)
   const addToCart = useMutation({
     mutationFn: async (productId) => {
       const token = localStorage.getItem("token");
@@ -52,7 +66,8 @@ export default function Wishlist() {
           headers: { Authorization: `Bearer ${token}` },
         });
         toast.success("Added to cart!");
-        queryClient.invalidateQueries(["wishlist"]);
+        queryClient.invalidateQueries(["wishlist"]); // ✅ Refresh wishlist
+        queryClient.invalidateQueries(["cart"]); // ✅ Refresh cart instantly
       } catch (error) {
         console.error("Error adding to cart:", error.response?.data || error);
         toast.error(error.response?.data?.detail || "Failed to add to cart.");
