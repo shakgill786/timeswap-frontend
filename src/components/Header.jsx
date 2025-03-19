@@ -1,40 +1,36 @@
-import { Link } from "react-router-dom";
-import { useEffect } from "react";
+// timeswap-frontend/src/components/Header.jsx
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Header() {
-  console.log("🔵 Header component is rendering!");
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    console.log("✅ Header mounted in the DOM!");
-  }, []);
-
-  const logoPath = "/TimeSwapLogo.png";
-  console.log("🖼️ Logo Path:", logoPath);
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/auth");
+  };
 
   return (
-    <header className="bg-blue-800 text-white py-4 px-6 shadow-md fixed top-0 w-full flex justify-between items-center z-50">
-      {/* Debugging Borders */}
-      <div className="flex items-center gap-3 border-2 border-red-500 p-2">
-        <p className="text-white bg-red-600 p-2">TEST HEADER</p>
-        <img 
-          src={logoPath} 
-          alt="TimeSwap Logo" 
-          className="h-14 w-auto object-contain bg-yellow-400"
+    <header className="bg-gradient-to-r from-blue-900 to-indigo-700 text-white py-3 px-8 shadow-lg fixed top-0 left-0 right-0 flex justify-between items-center z-50">
+      <div className="flex items-center gap-4">
+        <img
+          src="/TimeSwapLogo.png"
+          alt="TimeSwap Logo"
+          className="h-16 w-16 object-contain"
+          style={{ maxHeight: "80px", maxWidth: "80px" }}
         />
-        <h1 className="text-2xl font-bold tracking-wide">TimeSwap - The Moneyless Marketplace</h1>
+        <h1 className="text-2xl font-semibold tracking-wider">
+          Welcome To TimeSwap - The MoneyLess Marketplace
+        </h1>
       </div>
 
-      <nav className="flex gap-6 text-lg">
-        <Link to="/" className="hover:underline">Home</Link>
-        <Link to="/dashboard" className="hover:underline">Dashboard</Link>
-        <Link to="/wishlist" className="hover:underline">Wishlist</Link>
-        <Link to="/cart" className="hover:underline">Cart</Link>
-        <button 
-          onClick={() => {
-            localStorage.removeItem("token"); 
-            window.location.href = "/auth";
-          }} 
-          className="text-red-300 hover:underline"
+      <nav className="flex gap-8 text-lg font-medium">
+        <Link to="/" className="hover:text-indigo-200 transition-colors">Home</Link>
+        <Link to="/dashboard" className="hover:text-indigo-200 transition-colors">Dashboard</Link>
+        <Link to="/wishlist" className="hover:text-indigo-200 transition-colors">Wishlist</Link>
+        <Link to="/cart" className="hover:text-indigo-200 transition-colors">Cart</Link>
+        <button
+          onClick={handleLogout}
+          className="text-red-300 hover:text-red-200 transition-colors"
         >
           Logout
         </button>

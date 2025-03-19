@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -6,7 +8,7 @@
 :root {
   --primary-color: #0064d2;
   --secondary-color: #ffcc00;
-  --background-light: #f8f9fa;
+  --background-light: #f9fafb;
   --text-dark: #222;
   --text-light: #ffffff;
   --hover-color: #004aad;
@@ -14,34 +16,34 @@
 
 /* 🌎 General Styles */
 body {
-  margin: 0;
   font-family: "Inter", system-ui, Avenir, Helvetica, Arial, sans-serif;
   background-color: var(--background-light);
   color: var(--text-dark);
-  transition: all 0.3s ease-in-out;
+  transition: background-color 0.3s ease-in-out;
 }
 
-/* 🔵 Navbar */
-.navbar {
-  background-color: var(--primary-color);
+h1, h2, h3 {
+  font-weight: 700;
+}
+
+/* 🔵 Navbar & Header */
+header {
+  background: linear-gradient(to right, var(--primary-color), #4f46e5);
+  color: var(--text-light);
   padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: var(--text-light);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.navbar a {
+header a, header button {
   color: var(--text-light);
-  font-size: 1rem;
   font-weight: 500;
-  text-decoration: none;
-  margin: 0 15px;
-  transition: color 0.3s ease-in-out;
+  transition: color 0.3s ease;
 }
 
-.navbar a:hover {
+header a:hover, header button:hover {
   color: var(--secondary-color);
 }
 
@@ -51,7 +53,7 @@ body {
   border-radius: 12px;
   padding: 1rem;
   box-shadow: 0px 5px 8px rgba(0, 0, 0, 0.12);
-  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .product-card:hover {
@@ -69,7 +71,6 @@ body {
 .product-card h2 {
   font-size: 1.3rem;
   margin-top: 12px;
-  font-weight: 700;
   color: var(--text-dark);
 }
 
@@ -88,15 +89,13 @@ body {
 
 /* 🛒 Buttons */
 .button {
-  display: inline-block;
   background-color: var(--primary-color);
   color: var(--text-light);
   padding: 12px 18px;
-  font-size: 1rem;
   font-weight: bold;
   text-align: center;
   border-radius: 10px;
-  transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease;
   cursor: pointer;
 }
 
@@ -127,17 +126,15 @@ body {
   padding: 12px;
   border: 1px solid #ccc;
   border-radius: 10px 0 0 10px;
-  font-size: 1rem;
 }
 
 .search-bar button {
   background-color: var(--primary-color);
   color: var(--text-light);
-  border: none;
   padding: 12px 16px;
   border-radius: 0 10px 10px 0;
   cursor: pointer;
-  transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease;
 }
 
 .search-bar button:hover {
@@ -150,15 +147,15 @@ body {
   color: var(--text-light);
   text-align: center;
   padding: 1.2rem;
-  font-size: 0.9rem;
   margin-top: 50px;
   box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* 📱 Responsive Design */
 @media (max-width: 768px) {
-  .navbar {
+  header, .navbar {
     flex-direction: column;
+    padding: 1rem;
   }
 
   .search-bar {
@@ -166,7 +163,8 @@ body {
     align-items: center;
   }
 
-  .search-bar input {
+  .search-bar input, .search-bar button {
+    width: 100%;
     border-radius: 10px;
     margin-bottom: 12px;
   }
